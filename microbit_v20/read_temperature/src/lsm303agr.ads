@@ -26,6 +26,12 @@
 --  WHETHER IN CONTRACT, STRICT LIABILITY,
 --  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 --  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+--
+--
+--  Initial contribution by:
+--  AdaCore
+--  Ada Drivers Library (https://github.com/AdaCore/Ada_Drivers_Library)
+--  Package: MMA8653
 
 with HAL;        use HAL;
 with HAL.I2C;    use HAL.I2C;

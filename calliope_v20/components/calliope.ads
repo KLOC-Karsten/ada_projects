@@ -26,34 +26,19 @@
 --  WHETHER IN CONTRACT, STRICT LIABILITY,
 --  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 --  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+--
+--
+--  Initial contribution by:
+--  AdaCore
+--  Ada Drivers Library (https://github.com/AdaCore/Ada_Drivers_Library)
+--  Package: MicroBit
 
-with MicroBit.Display;
-with nRF.Temperature;
-with Calliope.I2C;
-with BMX055;
+with nRF.Device;
+with nRF.GPIO;
 
-procedure Read_Temperature is
-   T : Integer;
-   Sensor : BMX055.BMX055_Accelerometer (Calliope.I2C.Controller);
-begin
-   if not Calliope.I2C.Initialized then
-      Calliope.I2C.Initialize;
-   end if;
+package Calliope is
 
-   Sensor.Soft_Reset;
-   MicroBit.Display.Display (" "); --  just wait
+   CM_SCL  : nRF.GPIO.GPIO_Point renames nRF.Device.P19;
+   CM_SDA  : nRF.GPIO.GPIO_Point renames nRF.Device.P20;
 
-   if Sensor.Check_Device_Id then
-      loop
-         T := Integer (nRF.Temperature.Read);
-         MicroBit.Display.Display (Integer'Image(T));
-         T := Integer (Sensor.Read_Temperature);
-         MicroBit.Display.Display ("/" & Integer'Image(T));
-      end loop;
-   else
-      loop
-         MicroBit.Display.Display ("Bad Sensor");
-      end loop;
-   end if;
-
-end Read_Temperature;
+end Calliope;

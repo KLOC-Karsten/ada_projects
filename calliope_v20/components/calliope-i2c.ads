@@ -26,34 +26,30 @@
 --  WHETHER IN CONTRACT, STRICT LIABILITY,
 --  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 --  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+--
+--
+--  Initial contribution by:
+--  AdaCore
+--  Ada Drivers Library (https://github.com/AdaCore/Ada_Drivers_Library)
+--  Package: MicroBit.I2C
 
-with MicroBit.Display;
-with nRF.Temperature;
-with Calliope.I2C;
-with BMX055;
+with HAL.I2C; use HAL.I2C;
 
-procedure Read_Temperature is
-   T : Integer;
-   Sensor : BMX055.BMX055_Accelerometer (Calliope.I2C.Controller);
-begin
-   if not Calliope.I2C.Initialized then
-      Calliope.I2C.Initialize;
-   end if;
+package Calliope.I2C is
 
-   Sensor.Soft_Reset;
-   MicroBit.Display.Display (" "); --  just wait
+   type Speed is (S100kbps, S250kbps, S400kbps);
 
-   if Sensor.Check_Device_Id then
-      loop
-         T := Integer (nRF.Temperature.Read);
-         MicroBit.Display.Display (Integer'Image(T));
-         T := Integer (Sensor.Read_Temperature);
-         MicroBit.Display.Display ("/" & Integer'Image(T));
-      end loop;
-   else
-      loop
-         MicroBit.Display.Display ("Bad Sensor");
-      end loop;
-   end if;
+   function Initialized return Boolean;
+   --  Return True if the I2C controller is initialized and ready to use
 
-end Read_Temperature;
+   procedure Initialize (S : Speed := S400kbps)
+     with Post => Initialized;
+   --  Initialize the I2C controller at given speed, using the micro:bit I2C
+   --  pins:
+   --   - P19 -> SCL
+   --   - P20 -> SDA
+
+   function Controller return not null Any_I2C_Port;
+   --  Return the HAL.I2C controller implementation
+
+end Calliope.I2C;

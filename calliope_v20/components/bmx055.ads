@@ -1,4 +1,4 @@
---  Copyright (c) 2021, Karsten Lüth (kl@kloc-consulting.de)
+--  Copyright (c) 2021, Karsten Lueth (kl@kloc-consulting.de)
 --  All rights reserved.
 --
 --  Redistribution and use in source and binary forms, with or without
@@ -26,34 +26,46 @@
 --  WHETHER IN CONTRACT, STRICT LIABILITY,
 --  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 --  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+--
+--
+--  Initial contribution by:
+--  AdaCore
+--  Ada Drivers Library (https://github.com/AdaCore/Ada_Drivers_Library)
+--  Package: MMA8653
 
-with MicroBit.Display;
-with nRF.Temperature;
-with Calliope.I2C;
-with BMX055;
+with HAL;        use HAL;
+with HAL.I2C;    use HAL.I2C;
+with Interfaces; use Interfaces;
 
-procedure Read_Temperature is
-   T : Integer;
-   Sensor : BMX055.BMX055_Accelerometer (Calliope.I2C.Controller);
-begin
-   if not Calliope.I2C.Initialized then
-      Calliope.I2C.Initialize;
-   end if;
 
-   Sensor.Soft_Reset;
-   MicroBit.Display.Display (" "); --  just wait
+package BMX055 is
 
-   if Sensor.Check_Device_Id then
-      loop
-         T := Integer (nRF.Temperature.Read);
-         MicroBit.Display.Display (Integer'Image(T));
-         T := Integer (Sensor.Read_Temperature);
-         MicroBit.Display.Display ("/" & Integer'Image(T));
-      end loop;
-   else
-      loop
-         MicroBit.Display.Display ("Bad Sensor");
-      end loop;
-   end if;
+   type BMX055_Accelerometer (Port : not null Any_I2C_Port)
+   is tagged limited private;
 
-end Read_Temperature;
+   procedure Soft_Reset (This : BMX055_Accelerometer);
+
+   function Check_Device_Id (This : BMX055_Accelerometer) return Boolean;
+
+   subtype Temp_Celsius is Integer_8;
+
+   function Read_Temperature
+     (This : BMX055_Accelerometer) return Temp_Celsius;
+
+private
+   type BMX055_Accelerometer (Port : not null Any_I2C_Port) is tagged limited
+     null record;
+
+   type Register_Addresss is new UInt8;
+
+
+   Device_Id      : constant := 16#FA#;
+
+   Who_Am_I       : constant Register_Addresss := 16#00#;
+
+   ACCD_TEMP      : constant Register_Addresss := 16#08#;
+   BGW_SOFTRESET  : constant Register_Addresss := 16#14#;
+
+   Device_Address : constant I2C_Address := 16#30#;
+
+end BMX055;

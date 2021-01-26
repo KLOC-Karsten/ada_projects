@@ -26,34 +26,55 @@
 --  WHETHER IN CONTRACT, STRICT LIABILITY,
 --  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 --  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+--
+--
+--  Initial contribution by:
+--  AdaCore
+--  Ada Drivers Library (https://github.com/AdaCore/Ada_Drivers_Library)
+--  Package: MicroBit.I2C
 
-with MicroBit.Display;
-with nRF.Temperature;
-with Calliope.I2C;
-with BMX055;
+with nRF.Device;
+with nRF.TWI;
 
-procedure Read_Temperature is
-   T : Integer;
-   Sensor : BMX055.BMX055_Accelerometer (Calliope.I2C.Controller);
-begin
-   if not Calliope.I2C.Initialized then
-      Calliope.I2C.Initialize;
-   end if;
+package body Calliope.I2C is
 
-   Sensor.Soft_Reset;
-   MicroBit.Display.Display (" "); --  just wait
+   Init_Done : Boolean := False;
 
-   if Sensor.Check_Device_Id then
-      loop
-         T := Integer (nRF.Temperature.Read);
-         MicroBit.Display.Display (Integer'Image(T));
-         T := Integer (Sensor.Read_Temperature);
-         MicroBit.Display.Display ("/" & Integer'Image(T));
-      end loop;
-   else
-      loop
-         MicroBit.Display.Display ("Bad Sensor");
-      end loop;
-   end if;
+   Device : nRF.TWI.TWI_Master renames nRF.Device.TWI_0;
+   --  This device should not conflict with the device used in MicroBit.SPI.
+   --  See nRF Series Reference Manual, chapter Memory.Instantiation.
 
-end Read_Temperature;
+   -----------------
+   -- Initialized --
+   -----------------
+
+   function Initialized return Boolean
+   is (Init_Done);
+
+   ----------------
+   -- Initialize --
+   ----------------
+
+   procedure Initialize (S : Speed := S400kbps) is
+   begin
+      Device.Configure
+        (SCL   => CM_SCL.Pin,
+         SDA   => CM_SDA.Pin,
+         Speed => (case S is
+                      when S100kbps => nRF.TWI.TWI_100kbps,
+                      when S250kbps => nRF.TWI.TWI_250kbps,
+                      when S400kbps => nRF.TWI.TWI_400kbps)
+        );
+
+      Device.Enable;
+      Init_Done := True;
+   end Initialize;
+
+   ----------------
+   -- Controller --
+   ----------------
+
+   function Controller return not null Any_I2C_Port
+   is (Device'Access);
+
+end Calliope.I2C;
