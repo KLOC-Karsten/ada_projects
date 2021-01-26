@@ -9,6 +9,8 @@ A collection of Ada projects.
 
 
 ## Calliope projects
+Note that the Calliope mini is very similar, but not really identical to the micro:bit. 
+It uses the Bosch BMX055 as motion sensor and also has a different pin configuration. 
 
 - Read Temperature : display the temperature using the temperature sensor from
   the microcontroller and from the motion sensor.

@@ -1,8 +1,7 @@
 # Read Temperature
 
-In this example, the temperature from the microcontroller is shown in the 
-displayed. 
-
+In this example, the temperature from the microcontroller and the motion sensor (BMX055) is displayed. 
+Note that the Calliope mini uses different pins for the I2C interface. 
 
 ## Building
 
