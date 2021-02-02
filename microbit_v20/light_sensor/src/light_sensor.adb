@@ -118,6 +118,7 @@ package body Light_Sensor  is
                                Out_Min => Integer (Luminosity'First),
                                Out_Max => Integer (Luminosity'Last));
 
+      MicroBit.IOs.Set (Col_Pin, False);
       return Luminosity (Normalized);
 
    end Read_Analog_Value;

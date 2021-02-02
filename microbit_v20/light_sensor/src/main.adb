@@ -39,15 +39,15 @@ begin
    -- Forget the first measurement...
    MicroBit.Time.Delay_Ms(100);
    L := Light_Sensor.Read;
+   MicroBit.Time.Delay_Ms(1000);
 
    loop
-      MicroBit.Time.Delay_Ms(1000);
       L := Light_Sensor.Read;
       if L < Threshold then
-         MicroBit.Display.Symbols.Heart;
+         MicroBit.Display.Display("Ada lights");
       else
-         MicroBit.Display.Display(Integer'Image(Integer(L)));
-         --  MicroBit.Display.Clear;
+         MicroBit.Display.Display(" ");
+         MicroBit.Time.Delay_Ms(1000);
       end if;
    end loop;
 
