@@ -1,0 +1,29 @@
+--  Initial contribution by:
+--  AdaCore (https://www.adacore.com/)
+--  Ada Drivers Library (https://github.com/AdaCore/Ada_Drivers_Library)
+--  Project blinky_f446ze.gpr
+--       in Ada_Drivers_Library/examples/nucleo_f446ze
+
+with "../../../Ada_Drivers_Library/boards/nucleo_f446ze/nucleo_f446ze_full.gpr";
+
+project Blinky_F446RE extends "../../../Ada_Drivers_Library/examples/shared/common/common.gpr" is
+
+  for Runtime ("Ada") use NUCLEO_F446ZE_Full'Runtime("Ada");
+  for Target use "arm-eabi";
+  for Main use ("blinky.adb");
+  for Languages use ("Ada");
+  for Source_Dirs use ("src");
+  for Object_Dir use "obj";
+  for Create_Missing_Dirs use "True";
+
+   package Ide is
+      for Gnat use "arm-eabi-gnat";
+      for Gnatlist use "arm-eabi-gnatls";
+      for Debugger_Command use "arm-eabi-gdb";
+      for Connection_Tool use "pyocd";
+      for Program_Host use ":1234";
+      for Communication_Protocol use "remote";
+   end Ide;
+
+  package Compiler renames NUCLEO_F446ZE_Full.Compiler;
+end Blinky_F446RE;
